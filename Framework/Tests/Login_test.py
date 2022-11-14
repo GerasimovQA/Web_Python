@@ -1,38 +1,24 @@
-import json
-import time
-
 import requests
-from selenium.webdriver.common.by import By
-
 from Config.Config import Config
 from Pages.BasePage import BasePage
 from Pages.LoginPage import LoginPage
 from Tests.Base_test import BaseTest
 import pytest
 
-
 class TestCat(BaseTest):
 
     # def setup_method(self):
     # def teardown_method(self):
 
-    @pytest.mark.parametrize("url, text", [(Config.URL, "666"), (Config.URL, "777")])
-    def test_1(self, url, text):
+    @pytest.mark.parametrize("url, short_request, long_request, exp_title", [(Config.URL, "666", "666 angel number meaning", "666 angel number meaning - Google Search"),
+                                                                             (Config.URL, "777", "7777 meaning", "7777 meaning - Google Search")])
+    def test_1(self, url, short_request, long_request, exp_title):
         self.base_Page = BasePage(self.driver)
+        self.login_Page = LoginPage(self.driver)
         self.driver.get(url)
-        print(self.driver.title)
-        self.base_Page.enter_text(LoginPage.SEARCH_INPUT, text)
-        self.base_Page.click(LoginPage.POP_UP_LIST)
-        time.sleep(3)
-
-    @pytest.mark.parametrize("text", ["888", "999"])
-    def test_2(self, text):
-        self.driver.get(Config.URL)
-        print(self.driver.title)
-        locator = self.driver.find_element(By.NAME, "q")
-        locator.send_keys(text)
-        print(locator.get_attribute("name"))
-        time.sleep(3)
+        self.base_Page.enter_text(LoginPage.SEARCH_INPUT, short_request)
+        self.base_Page.click_element_in_list(LoginPage.POP_UP_LIST, long_request)
+        self.base_Page.check_title(exp_title)
 
     def test_get_request(self):
         response = requests.get("https://reqres.in/api/users/2")
